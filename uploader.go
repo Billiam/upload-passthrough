@@ -79,7 +79,7 @@ func main() {
     log.Fatalln(err)
   }
 
-  //if config.Launch != "" {
-    exec.Command(config.Launch, os.Args[1]).Run()
-  //}
+  if config.Launch != "" {
+    exec.Command(config.Launch, os.Args[1]).Start()
+  }
 }
