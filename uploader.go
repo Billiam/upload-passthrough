@@ -11,6 +11,7 @@ import (
   "path/filepath"
   "gopkg.in/yaml.v2"
   "os/exec"
+  "time"
 )
 
 type uploadConfig struct {
@@ -82,4 +83,6 @@ func main() {
   if config.Launch != "" {
     exec.Command(config.Launch, os.Args[1]).Start()
   }
+  // PRs welcome :)
+  time.Sleep(5 * time.Second)
 }
