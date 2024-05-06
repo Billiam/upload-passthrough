@@ -3,11 +3,8 @@ package main
 import (
   "net/http"
   "os"
-  "io"
   "io/ioutil"
   "log"
-  "bytes"
-  "mime/multipart"
   "path/filepath"
   "gopkg.in/yaml.v2"
   "os/exec"
@@ -27,6 +24,7 @@ func main() {
   if err != nil {
     log.Fatalln(err)
   }
+  defer file.Close()
 
   config := &uploadConfig{}
 
@@ -51,28 +49,10 @@ func main() {
     log.Fatalln("Url was not configured")
   }
 
-  var requestBody bytes.Buffer
-
-  multiPartWriter := multipart.NewWriter(&requestBody)
-
-  fileWriter, err := multiPartWriter.CreateFormFile("upload", filepath.Base(fileName))
-
+  req, err := http.NewRequest("POST", config.Url + "/" + filepath.Base(fileName) + "?type=UPLOAD_FILE", file)
   if err != nil {
     log.Fatalln(err)
   }
-
-  _, err = io.Copy(fileWriter, file)
-  if err != nil {
-    log.Fatalln(err)
-  }
-
-  multiPartWriter.Close()
-
-  req, err := http.NewRequest("POST", config.Url + "/" + filepath.Base(fileName) + "?type=UPLOAD_FILE", &requestBody)
-  if err != nil {
-    log.Fatalln(err)
-  }
-  req.Header.Set("Content-Type", multiPartWriter.FormDataContentType())
 
   client := &http.Client{}
   _, err = client.Do(req)
